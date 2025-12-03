@@ -3,6 +3,7 @@ package com.rgs.recipeapi.controller;
 import com.rgs.recipeapi.entity.Author;
 import com.rgs.recipeapi.entity.Recipe;
 import com.rgs.recipeapi.repository.AuthorRepository;
+import com.rgs.recipeapi.repository.IngredientRepository;
 import com.rgs.recipeapi.repository.RecipeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,12 +31,16 @@ class RecipeControllerTest {
     private AuthorRepository authorRepository;
 
     @Autowired
+    private IngredientRepository ingredientRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private Author testAuthor;
 
     @BeforeEach
     void setUp() {
+        ingredientRepository.deleteAll();
         recipeRepository.deleteAll();
         authorRepository.deleteAll();
 
