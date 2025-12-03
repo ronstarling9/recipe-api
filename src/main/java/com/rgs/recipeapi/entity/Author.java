@@ -1,4 +1,4 @@
-package com.example.recipeapi.entity;
+package com.rgs.recipeapi.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

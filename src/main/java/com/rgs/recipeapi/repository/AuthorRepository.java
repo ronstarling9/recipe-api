@@ -1,6 +1,6 @@
-package com.example.recipeapi.repository;
+package com.rgs.recipeapi.repository;
 
-import com.example.recipeapi.entity.Author;
+import com.rgs.recipeapi.entity.Author;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthorRepository extends JpaRepository<Author, Long> {

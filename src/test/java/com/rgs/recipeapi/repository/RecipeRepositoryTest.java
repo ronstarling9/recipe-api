@@ -1,7 +1,7 @@
-package com.example.recipeapi.repository;
+package com.rgs.recipeapi.repository;
 
-import com.example.recipeapi.entity.Author;
-import com.example.recipeapi.entity.Recipe;
+import com.rgs.recipeapi.entity.Author;
+import com.rgs.recipeapi.entity.Recipe;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

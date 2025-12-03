@@ -1,0 +1,5 @@
+com/rgs/recipeapi/RecipeApiApplication.class
+com/rgs/recipeapi/repository/AuthorRepository.class
+com/rgs/recipeapi/entity/Author.class
+com/rgs/recipeapi/entity/Recipe.class
+com/rgs/recipeapi/repository/RecipeRepository.class
