@@ -7,7 +7,7 @@ import com.rgs.recipeapi.entity.Recipe;
 import com.rgs.recipeapi.repository.AuthorRepository;
 import com.rgs.recipeapi.repository.IngredientRepository;
 import com.rgs.recipeapi.repository.RecipeRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;

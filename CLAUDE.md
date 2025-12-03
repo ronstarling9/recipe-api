@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-Spring Boot 3.2.0 REST API with H2 in-memory database. Package: `com.rgs.recipeapi`
+Spring Boot 4.0.0 REST API with H2 in-memory database, running on Java 25. Package: `com.rgs.recipeapi`
 
 ### Entity Relationships
 
@@ -58,6 +58,13 @@ void setUp() {
     authorRepository.deleteAll();
 }
 ```
+
+### Spring Boot 4.0 Import Locations
+
+Spring Boot 4.0 modularized test dependencies. Key imports:
+- Jackson: `tools.jackson.databind.ObjectMapper` (not `com.fasterxml.jackson`)
+- MockMvc: `org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`
+- JPA Tests: `org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest`
 
 ## Known Intentional Bugs (Demo Purposes)
 
