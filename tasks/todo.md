@@ -66,3 +66,35 @@
    - `AutoConfigureMockMvc` moved to `org.springframework.boot.webmvc.test.autoconfigure`
    - `DataJpaTest` moved to `org.springframework.boot.data.jpa.test.autoconfigure`
    - Required adding `spring-boot-starter-webmvc-test` and `spring-boot-starter-data-jpa-test` dependencies
+
+---
+
+# RCPAPI-1: Disable H2 Database Console
+
+## Problem
+The H2 database console was enabled and accessible at /h2-console, providing an attack vector for arbitrary SQL execution, data exfiltration, and potential RCE.
+
+## Checklist
+- [x] Write a failing test that verifies H2 console is disabled
+- [x] Run test to confirm it fails (RED phase)
+- [x] Implement minimal fix to disable H2 console
+- [x] Run test to confirm it passes (GREEN phase)
+- [x] Run all tests to ensure no regressions
+
+## Changes Made
+
+1. **src/main/resources/application.properties:8** - Changed spring.h2.console.enabled from true to false
+
+2. **src/test/java/com/rgs/recipeapi/H2ConsoleSecurityTest.java** (new file) - Added test that verifies the H2 console configuration property is set to false
+
+## Review
+
+The fix disables the H2 console by setting spring.h2.console.enabled=false in application.properties. This is the minimal change needed to address the security vulnerability.
+
+A new test class H2ConsoleSecurityTest ensures the H2 console remains disabled. The test reads the spring.h2.console.enabled property and asserts it is false. If anyone accidentally re-enables the console, this test will fail with a clear error message explaining the security risk.
+
+All 22 tests pass including the new security test.
+
+## Verification
+
+To verify the fix works, start the application and navigate to http://localhost:8080/h2-console in a browser. The endpoint should return a 404 Not Found error instead of the H2 console login page.
