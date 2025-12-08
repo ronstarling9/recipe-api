@@ -1,6 +1,7 @@
 package com.rgs.recipeapi;
 
 import com.rgs.recipeapi.entity.Author;
+import com.rgs.recipeapi.entity.Ingredient;
 import com.rgs.recipeapi.entity.Recipe;
 import com.rgs.recipeapi.repository.AuthorRepository;
 import com.rgs.recipeapi.repository.IngredientRepository;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class OrphanedRecipesBugTest {
+class AuthorCascadeDeleteTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +41,7 @@ class OrphanedRecipesBugTest {
     }
 
     @Test
-    void deletingAuthorWithRecipesShouldCascadeDelete() throws Exception {
+    void deletingAuthorShouldCascadeDeleteRecipes() throws Exception {
         // Setup: Create author with recipe
         Author author = new Author();
         author.setName("Test Author");
@@ -53,30 +54,49 @@ class OrphanedRecipesBugTest {
 
         Long authorId = author.getId();
 
-        // BUG FIX: Cascade delete is now configured on the Author entity.
-        // Deleting an author will cascade delete all associated recipes.
+        // Expected behavior: Deleting author should cascade delete recipes
         mockMvc.perform(delete("/authors/" + authorId))
                 .andExpect(status().isNoContent());
 
-        // The author and recipe are both deleted
+        // Author should be gone
         assertThat(authorRepository.findById(authorId)).isEmpty();
+
+        // Recipe should also be gone (cascade delete)
         assertThat(recipeRepository.findAll()).isEmpty();
     }
 
     @Test
-    void deletingAuthorWithoutRecipesSucceeds() throws Exception {
-        // Setup: Create author WITHOUT recipes
+    void deletingAuthorShouldCascadeDeleteRecipesAndIngredients() throws Exception {
+        // Setup: Create author with recipe that has ingredients
         Author author = new Author();
-        author.setName("Lonely Author");
+        author.setName("Chef Author");
         author = authorRepository.save(author);
+
+        Recipe recipe = new Recipe();
+        recipe.setTitle("Recipe with Ingredients");
+        recipe.setAuthor(author);
+        recipe = recipeRepository.save(recipe);
+
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Salt");
+        ingredient.setQuantity(1.0f);
+        ingredient.setUnit("tsp");
+        ingredient.setRecipe(recipe);
+        ingredient = ingredientRepository.save(ingredient);
 
         Long authorId = author.getId();
 
-        // This should succeed
+        // Expected behavior: Deleting author should cascade delete recipes and their ingredients
         mockMvc.perform(delete("/authors/" + authorId))
                 .andExpect(status().isNoContent());
 
-        // Author is gone
+        // Author should be gone
         assertThat(authorRepository.findById(authorId)).isEmpty();
+
+        // Recipe should also be gone (cascade delete)
+        assertThat(recipeRepository.findAll()).isEmpty();
+
+        // Ingredient should also be gone (cascade delete through recipe)
+        assertThat(ingredientRepository.findAll()).isEmpty();
     }
 }

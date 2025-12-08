@@ -31,7 +31,7 @@ Spring Boot 4.0.0 REST API with H2 in-memory database, running on Java 25. Packa
 Author (1) ──< Recipe (1) ──< Ingredient (many)
 ```
 
-- **Author**: Has many Recipes (no cascade - deleting author with recipes causes constraint violation)
+- **Author**: Has many Recipes (cascade delete enabled - deleting author deletes associated recipes)
 - **Recipe**: Belongs to Author, has many Ingredients
 - **Ingredient**: Belongs to Recipe (nested under `/recipes/{recipeId}/ingredients`)
 
@@ -68,8 +68,7 @@ Spring Boot 4.0 modularized test dependencies. Key imports:
 
 ## Known Intentional Bugs (Demo Purposes)
 
-1. **No cascade delete on Author**: Deleting an author with recipes throws unhandled `ConstraintViolationException` (see `OrphanedRecipesBugTest`)
-2. **No quantity validation on Ingredient**: Negative quantities are accepted (see `IngredientControllerTest#shouldAllowNegativeQuantityOnCreate`)
+1. **No quantity validation on Ingredient**: Negative quantities are accepted (see `IngredientControllerTest#shouldAllowNegativeQuantityOnCreate`)
 
 ## Workflow
 

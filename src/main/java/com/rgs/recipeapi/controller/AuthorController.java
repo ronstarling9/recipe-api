@@ -48,8 +48,6 @@ public class AuthorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
-        // INTENTIONAL BUG: Does not check for or delete associated recipes
-        // This will leave orphaned recipes when an author is deleted
         if (authorRepository.existsById(id)) {
             authorRepository.deleteById(id);
             return ResponseEntity.noContent().build();
