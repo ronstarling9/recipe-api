@@ -115,17 +115,96 @@ class IngredientControllerTest {
     }
 
     @Test
-    void shouldAllowNegativeQuantityOnCreate() throws Exception {
-        // INTENTIONAL BUG: Negative quantities are accepted
+    void shouldAcceptPositiveQuantityOnCreate() throws Exception {
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Sugar");
-        ingredient.setQuantity(-5.0f);  // Negative!
+        ingredient.setQuantity(5.0f);
         ingredient.setUnit("cups");
 
         mockMvc.perform(post("/recipes/" + testRecipe.getId() + "/ingredients")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ingredient)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.quantity").value(-5.0));
+                .andExpect(jsonPath("$.quantity").value(5.0));
+    }
+
+    @Test
+    void shouldAcceptZeroQuantityOnCreate() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Optional garnish");
+        ingredient.setQuantity(0.0f);
+        ingredient.setUnit("cups");
+
+        mockMvc.perform(post("/recipes/" + testRecipe.getId() + "/ingredients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ingredient)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.quantity").value(0.0));
+    }
+
+    @Test
+    void shouldRejectNegativeQuantityOnCreate() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Sugar");
+        ingredient.setQuantity(-5.0f);
+        ingredient.setUnit("cups");
+
+        mockMvc.perform(post("/recipes/" + testRecipe.getId() + "/ingredients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ingredient)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldAcceptPositiveQuantityOnUpdate() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Butter");
+        ingredient.setQuantity(1.0f);
+        ingredient.setUnit("stick");
+        ingredient.setRecipe(testRecipe);
+        ingredient = ingredientRepository.save(ingredient);
+
+        ingredient.setQuantity(3.0f);
+
+        mockMvc.perform(put("/recipes/" + testRecipe.getId() + "/ingredients/" + ingredient.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ingredient)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity").value(3.0));
+    }
+
+    @Test
+    void shouldAcceptZeroQuantityOnUpdate() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Butter");
+        ingredient.setQuantity(1.0f);
+        ingredient.setUnit("stick");
+        ingredient.setRecipe(testRecipe);
+        ingredient = ingredientRepository.save(ingredient);
+
+        ingredient.setQuantity(0.0f);
+
+        mockMvc.perform(put("/recipes/" + testRecipe.getId() + "/ingredients/" + ingredient.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ingredient)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity").value(0.0));
+    }
+
+    @Test
+    void shouldRejectNegativeQuantityOnUpdate() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName("Butter");
+        ingredient.setQuantity(1.0f);
+        ingredient.setUnit("stick");
+        ingredient.setRecipe(testRecipe);
+        ingredient = ingredientRepository.save(ingredient);
+
+        ingredient.setQuantity(-2.0f);
+
+        mockMvc.perform(put("/recipes/" + testRecipe.getId() + "/ingredients/" + ingredient.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ingredient)))
+                .andExpect(status().isBadRequest());
     }
 }

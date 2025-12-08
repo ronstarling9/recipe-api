@@ -69,7 +69,6 @@ Spring Boot 4.0 modularized test dependencies. Key imports:
 ## Known Intentional Bugs (Demo Purposes)
 
 1. **No cascade delete on Author**: Deleting an author with recipes throws unhandled `ConstraintViolationException` (see `OrphanedRecipesBugTest`)
-2. **No quantity validation on Ingredient**: Negative quantities are accepted (see `IngredientControllerTest#shouldAllowNegativeQuantityOnCreate`)
 
 ## Workflow
 
