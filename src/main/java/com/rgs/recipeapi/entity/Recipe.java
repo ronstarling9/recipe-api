@@ -21,6 +21,9 @@ public class Recipe {
     @JoinColumn(name = "author_id")
     private Author author;
 
+    @OneToMany(mappedBy = "recipe")
+    private java.util.List<Ingredient> ingredients;
+
     public Long getId() {
         return id;
     }

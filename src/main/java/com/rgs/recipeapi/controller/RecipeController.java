@@ -1,11 +1,18 @@
 package com.rgs.recipeapi.controller;
 
+import com.rgs.recipeapi.entity.Author;
+import com.rgs.recipeapi.entity.Ingredient;
 import com.rgs.recipeapi.entity.Recipe;
 import com.rgs.recipeapi.repository.RecipeRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,6 +28,42 @@ public class RecipeController {
     @GetMapping
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
+    }
+
+    @GetMapping("/search")
+    public List<Recipe> searchRecipes(@RequestParam(required = false) List<String> keywords) {
+        if (keywords == null || keywords.isEmpty() || keywords.stream().allMatch(String::isBlank)) {
+            return List.of();
+        }
+
+        Specification<Recipe> spec = (root, query, cb) -> {
+            List<Predicate> keywordPredicates = new ArrayList<>();
+
+            for (String keyword : keywords) {
+                if (keyword == null || keyword.isBlank()) {
+                    continue;
+                }
+                String pattern = "%" + keyword.toLowerCase() + "%";
+                List<Predicate> fieldPredicates = new ArrayList<>();
+
+                fieldPredicates.add(cb.like(cb.lower(root.get("title")), pattern));
+                fieldPredicates.add(cb.like(cb.lower(root.get("description")), pattern));
+                fieldPredicates.add(cb.like(cb.lower(root.get("instructions")), pattern));
+
+                Join<Recipe, Author> authorJoin = root.join("author", JoinType.LEFT);
+                fieldPredicates.add(cb.like(cb.lower(authorJoin.get("name")), pattern));
+
+                Join<Recipe, Ingredient> ingredientJoin = root.join("ingredients", JoinType.LEFT);
+                fieldPredicates.add(cb.like(cb.lower(ingredientJoin.get("name")), pattern));
+
+                keywordPredicates.add(cb.or(fieldPredicates.toArray(new Predicate[0])));
+            }
+
+            query.distinct(true);
+            return cb.and(keywordPredicates.toArray(new Predicate[0]));
+        };
+
+        return recipeRepository.findAll(spec);
     }
 
     @GetMapping("/{id}")
