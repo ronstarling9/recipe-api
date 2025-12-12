@@ -3,6 +3,7 @@ package com.rgs.recipeapi.controller;
 import com.rgs.recipeapi.entity.Ingredient;
 import com.rgs.recipeapi.repository.IngredientRepository;
 import com.rgs.recipeapi.repository.RecipeRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +33,10 @@ public class IngredientController {
 
     @PostMapping
     public ResponseEntity<Ingredient> createIngredient(@PathVariable Long recipeId,
-                                                        @RequestBody Ingredient ingredient) {
+                                                        @Valid @RequestBody Ingredient ingredient) {
         return recipeRepository.findById(recipeId)
                 .map(recipe -> {
                     ingredient.setRecipe(recipe);
-                    // INTENTIONAL BUG: No validation on quantity
                     Ingredient saved = ingredientRepository.save(ingredient);
                     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
                 })
@@ -46,7 +46,7 @@ public class IngredientController {
     @PutMapping("/{ingredientId}")
     public ResponseEntity<Ingredient> updateIngredient(@PathVariable Long recipeId,
                                                         @PathVariable Long ingredientId,
-                                                        @RequestBody Ingredient ingredient) {
+                                                        @Valid @RequestBody Ingredient ingredient) {
         if (!recipeRepository.existsById(recipeId)) {
             return ResponseEntity.notFound().build();
         }

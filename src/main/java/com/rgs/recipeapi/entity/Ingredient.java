@@ -1,6 +1,7 @@
 package com.rgs.recipeapi.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class Ingredient {
@@ -11,7 +12,7 @@ public class Ingredient {
 
     private String name;
 
-    // INTENTIONAL BUG: No @Min or @Positive validation
+    @PositiveOrZero(message = "Quantity must be zero or positive")
     private Float quantity;
 
     private String unit;

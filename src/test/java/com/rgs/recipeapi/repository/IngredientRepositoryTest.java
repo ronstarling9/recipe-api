@@ -3,11 +3,13 @@ package com.rgs.recipeapi.repository;
 import com.rgs.recipeapi.entity.Author;
 import com.rgs.recipeapi.entity.Ingredient;
 import com.rgs.recipeapi.entity.Recipe;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 class IngredientRepositoryTest {
@@ -46,8 +48,7 @@ class IngredientRepositoryTest {
     }
 
     @Test
-    void shouldAllowNegativeQuantity() {
-        // INTENTIONAL BUG: No validation prevents negative quantities
+    void shouldRejectNegativeQuantity() {
         Author author = new Author();
         author.setName("Test Author");
         author = authorRepository.save(author);
@@ -59,13 +60,11 @@ class IngredientRepositoryTest {
 
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Sugar");
-        ingredient.setQuantity(-5.0f);  // Negative! This should fail but doesn't.
+        ingredient.setQuantity(-5.0f);
         ingredient.setUnit("cups");
         ingredient.setRecipe(recipe);
 
-        Ingredient saved = ingredientRepository.save(ingredient);
-
-        // Bug: This passes when it shouldn't
-        assertThat(saved.getQuantity()).isEqualTo(-5.0f);
+        assertThatThrownBy(() -> ingredientRepository.save(ingredient))
+                .isInstanceOf(ConstraintViolationException.class);
     }
 }
