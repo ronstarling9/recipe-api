@@ -88,7 +88,6 @@ src/main/java/com/rgs/recipeapi/
 ├── DataLoader.java      # Seed data loader
 └── RecipeApiApplication.java
 ```
-## Test
 ## License
 
 MIT
